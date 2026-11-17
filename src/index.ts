@@ -1,4 +1,5 @@
 import { LcarsButton } from './components/button.js';
+import { LcarsDialog } from './components/dialog.js';
 import { LcarsInput } from './components/input.js';
 import { LcarsProgress } from './components/progress.js';
 import { LcarsSelect } from './components/select.js';
@@ -14,13 +15,14 @@ import { LcarsSidebar } from './layouts/sidebar.js';
 import { LcarsStack } from './layouts/stack.js';
 
 export {
-  LcarsButton, LcarsDivider, LcarsGrid, LcarsHeader, LcarsInput, LcarsPanel,
+  LcarsButton, LcarsDialog, LcarsDivider, LcarsGrid, LcarsHeader, LcarsInput, LcarsPanel,
   LcarsProgress, LcarsScreen, LcarsSelect, LcarsSidebar, LcarsSlider, LcarsStack,
   LcarsStatus, LcarsToggle,
 };
 
 const elements = {
   'lcars-button': LcarsButton,
+  'lcars-dialog': LcarsDialog,
   'lcars-divider': LcarsDivider,
   'lcars-grid': LcarsGrid,
   'lcars-header': LcarsHeader,
@@ -39,6 +41,7 @@ const elements = {
 declare global {
   interface HTMLElementTagNameMap {
     'lcars-button': LcarsButton;
+    'lcars-dialog': LcarsDialog;
     'lcars-divider': LcarsDivider;
     'lcars-grid': LcarsGrid;
     'lcars-header': LcarsHeader;

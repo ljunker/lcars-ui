@@ -1,5 +1,7 @@
 import { html, type TemplateResult } from 'lit';
+import { createRef, ref } from 'lit/directives/ref.js';
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { LcarsDialog } from '../../src/index.js';
 
 export default { title: 'LCARS/Controls' } satisfies Meta;
 
@@ -18,6 +20,18 @@ export const Buttons: StoryObj = {
     <lcars-button appearance="navigation" active>Current</lcars-button>
     <lcars-button disabled>Disabled</lcars-button>
   `),
+};
+
+export const Dialog: StoryObj = {
+  render: () => {
+    const dialog = createRef<LcarsDialog>();
+    return sample(html`
+      <lcars-button @click=${() => dialog.value?.showModal()}>Open sensor report</lcars-button>
+      <lcars-dialog ${ref(dialog)} title="Sensor report">
+        <p>Long-range sensors detected three contacts.</p>
+      </lcars-dialog>
+    `);
+  },
 };
 
 export const Input: StoryObj = {

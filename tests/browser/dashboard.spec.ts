@@ -31,13 +31,47 @@ test('keyboard navigation, focus, disabled controls and course plotting', async 
   await page.keyboard.press('Tab');
   await expect(plot).toBeFocused();
   await page.keyboard.press('Space');
-  await expect(page.getByRole('status').filter({ hasText: 'HEADING SET' })).toHaveText('HEADING SET / Vulcan · standard');
+
+  const dialog = page.getByRole('dialog', { name: 'Confirm flight plan' });
+  const cancel = page.getByRole('button', { name: 'Cancel', exact: true });
+  const confirm = page.getByRole('button', { name: 'Confirm course' });
+  const courseMessage = page.locator('#course-message');
+  await expect(dialog).toBeVisible();
+  await expect(page.locator('#course-destination')).toHaveText('Vulcan');
+  await expect(page.locator('#course-approach')).toHaveText('Standard');
+  await expect(courseMessage).toHaveText('NO ACTIVE COURSE');
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(confirm).toBeFocused();
+  await navigation.focus();
+  await expect(confirm).toBeFocused();
+  await page.mouse.click(1, 1);
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(plot).toBeFocused();
+  await expect(courseMessage).toHaveText('NO ACTIVE COURSE');
+
+  await page.keyboard.press('Space');
+  await expect(cancel).toBeFocused();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
+  await expect(dialog).toBeHidden();
+  await expect(plot).toBeFocused();
+  await expect(courseMessage).toHaveText('HEADING SET / Vulcan · standard');
   await expect(page.getByText('Course locked')).toBeVisible();
 
+  await destination.fill('Andoria');
   await approach.selectOption('docking');
   await expect(page.getByText('Awaiting course')).toBeVisible();
   await plot.click();
-  await expect(page.getByRole('status').filter({ hasText: 'HEADING SET' })).toHaveText('HEADING SET / Vulcan · docking');
+  await expect(page.locator('#course-destination')).toHaveText('Andoria');
+  await expect(page.locator('#course-approach')).toHaveText('Docking');
+  await page.locator('#destination').evaluate((input: HTMLElementTagNameMap['lcars-input']) => {
+    input.value = 'Earth';
+  });
+  await confirm.click();
+  await expect(courseMessage).toHaveText('HEADING SET / Andoria · docking');
 });
 
 test('dashboard controls update telemetry and expose native events', async ({ page }) => {
@@ -77,6 +111,28 @@ test('dashboard controls update telemetry and expose native events', async ({ pa
 
 test.describe('touch layouts', () => {
   test.use({ hasTouch: true });
+
+  test('opens and cancels the flight plan within a 390px viewport', async ({ page }) => {
+    const viewport = { width: 390, height: 650 };
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Navigation' }).tap();
+    await page.getByRole('textbox', { name: 'Destination' }).fill('Vulcan');
+    await page.getByRole('button', { name: 'Plot course' }).tap();
+
+    const dialog = page.getByRole('dialog', { name: 'Confirm flight plan' });
+    await expect(dialog).toBeVisible();
+    const bounds = (await dialog.boundingBox())!;
+    expect(bounds.x).toBeGreaterThanOrEqual(0);
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
+
+    await page.getByRole('button', { name: 'Cancel', exact: true }).tap();
+    await expect(dialog).toBeHidden();
+    await expect(page.getByText('Awaiting course')).toBeVisible();
+    await expect(page.locator('#course-message')).toHaveText('NO ACTIVE COURSE');
+  });
 
   test('updates thrust telemetry from a touch input in the navigation view', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 900 });
@@ -123,5 +179,11 @@ for (const theme of ['tng', 'voyager']) {
     await page.getByRole('button', { name: 'Navigation' }).click();
     const navigationResult = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(navigationResult.violations).toEqual([]);
+
+    await page.getByRole('textbox', { name: 'Destination' }).fill('Vulcan');
+    await page.getByRole('button', { name: 'Plot course' }).click();
+    await expect(page.getByRole('dialog', { name: 'Confirm flight plan' })).toBeVisible();
+    const dialogResult = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(dialogResult.violations).toEqual([]);
   });
 }

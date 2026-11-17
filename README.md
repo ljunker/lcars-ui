@@ -28,7 +28,7 @@ Das lokale Paket lässt sich in einem separaten Projekt installieren und mit ein
 pnpm build
 pnpm pack
 cd /pfad/zur/anwendung
-npm install /pfad/zu/lcars-ui/lcars-ui-0.1.3.tgz
+npm install /pfad/zu/lcars-ui/lcars-ui-0.1.4.tgz
 ```
 
 Das veröffentlichte Paket lässt sich mit `npm install lcars-ui` installieren. In einem Projekt mit Vite reicht dieser Modulimport.
@@ -68,6 +68,7 @@ Der Import registriert die Custom Elements im Browser und exportiert ihre Klasse
 | `lcars-stack` | `direction="horizontal"` für umbrechende Zeilen, `justify="between"` | Standard | `stack` |
 | `lcars-divider` | | | `divider`, `rail`, `cap` |
 | `lcars-button` | `label` für einen optionalen zugänglichen Namen, `active`, `disabled`, `tone`, `appearance="outline\|navigation"` | Standard für Beschriftung | `control` |
+| `lcars-dialog` | `title` für Überschrift und zugänglichen Namen | Standard für Inhalt, `actions` für Schaltflächen | `dialog`, `title`, `content`, `actions` |
 | `lcars-progress` | `label`, `value`, `max`, `tone`, `segmented`, `hide-readout` | | `track`, `readout` |
 | `lcars-status` | `state="nominal\|warning\|alert\|offline"` | Standard für Statustext | `status`, `indicator` |
 | `lcars-input` | `label`, `value`, `placeholder`, `disabled` | | `label`, `control` |
@@ -101,6 +102,26 @@ Bei wenig Platz rückt die Navigation über den Hauptinhalt. Das Raster reduzier
 Das Select übernimmt direkte `<option>`- und `<optgroup>`-Kinder und synchronisiert Änderungen am Markup. Ohne Wertvorgabe gilt die native Standardauswahl. Ein gesetzter oder gewählter Wert bleibt bei Optionsänderungen maßgeblich. Fehlt die passende Option, ist die Auswahl leer. Das Entfernen eines gesetzten `value`-Attributs oder `select.value = null` stellt die Standardauswahl wieder her.
 
 Der Slider verwendet standardmäßig `min=0`, `max=100` und `step=1`. `step="any"` erlaubt beliebige Zwischenschritte. Ohne Wertvorgabe bestimmt das native Range-Feld den Startwert. Nach einer programmatischen Änderung liefert `.value` den normalisierten Wert, sobald `slider.updateComplete` aufgelöst ist.
+
+### Modaler Dialog
+
+```html
+<lcars-button id="review">Review course</lcars-button>
+<lcars-dialog id="flight-plan" title="Flight plan">
+  <p>Destination: Vulcan. Approach mode: standard.</p>
+  <lcars-button slot="actions" id="dismiss" autofocus>Cancel</lcars-button>
+</lcars-dialog>
+
+<script type="module">
+  import 'lcars-ui';
+
+  const dialog = document.getElementById('flight-plan');
+  document.getElementById('review').addEventListener('click', () => dialog.showModal());
+  document.getElementById('dismiss').addEventListener('click', () => dialog.close());
+</script>
+```
+
+`showModal()` öffnet den verbundenen, bereits gerenderten Dialog. Warte bei einem Aufruf direkt nach dem Einfügen auf `dialog.updateComplete`. Die schreibgeschützte Property `dialog.open` zeigt den aktuellen Zustand an. Escape und `close()` schließen den Dialog. Ein Klick auf den Hintergrund lässt ihn offen. Nach dem Schließen sendet das Element ein `close`-Event, das über Shadow-DOM-Grenzen propagiert. Ohne eigene `actions` erscheint die Schaltfläche **Close**. Mit `autofocus` bestimmst du den Anfangsfokus.
 
 ### Themes und Tokens
 
@@ -145,4 +166,4 @@ Der Showcase enthält Barlow Condensed und IBM Plex Mono. Ihre SIL-OFL-Lizenztex
 
 ## Release
 
-Der GitHub-Workflow prüft Build, Tests und Beispiele. Ein Tag wie `v0.1.3` muss zur Paketversion passen. Bei einem Tag-Push packt der Workflow die Bibliothek nach erfolgreichen Prüfungen und veröffentlicht den Tarball über npm Trusted Publishing in der GitHub-Umgebung `npm`. [GitHub-Workflow](.github/workflows/ci.yml), [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+Der GitHub-Workflow prüft Build, Tests und Beispiele. Ein Tag wie `v0.1.4` muss zur Paketversion passen. Bei einem Tag-Push packt der Workflow die Bibliothek nach erfolgreichen Prüfungen und veröffentlicht den Tarball über npm Trusted Publishing in der GitHub-Umgebung `npm`. [GitHub-Workflow](.github/workflows/ci.yml), [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)

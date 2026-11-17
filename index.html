@@ -159,6 +159,17 @@
           </lcars-panel>
         </lcars-grid>
       </lcars-stack>
+
+      <lcars-dialog id="course-dialog" title="Confirm flight plan">
+        <dl>
+          <dt>Destination</dt>
+          <dd id="course-destination"></dd>
+          <dt>Approach mode</dt>
+          <dd id="course-approach"></dd>
+        </dl>
+        <lcars-button slot="actions" id="cancel-course" appearance="outline" autofocus>Cancel</lcars-button>
+        <lcars-button slot="actions" id="confirm-course">Confirm course</lcars-button>
+      </lcars-dialog>
     </lcars-screen>
   </body>
 </html>

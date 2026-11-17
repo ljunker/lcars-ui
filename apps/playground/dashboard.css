@@ -62,3 +62,8 @@ h1 {
 .sensor [hidden] { display: none; }
 .sensor-field { fill: #0b0d18; }
 .sensor-labels { font-family: var(--lcars-font-mono); }
+
+#course-dialog dl { margin: 0; }
+#course-dialog dt { font: 500 .75rem/1.5 var(--lcars-font-mono); }
+#course-dialog dd { margin: 0; font-weight: 600; }
+#course-dialog dd + dt { margin-block-start: .75rem; }

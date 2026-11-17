@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import type { LcarsProgress, LcarsScreen } from 'lcars-ui';
+import type { LcarsDialog, LcarsProgress, LcarsScreen } from 'lcars-ui';
 
 test('inherits tokens across nested screens while each screen retains its theme', async ({ page }) => {
   await page.goto('/examples/vanilla-html/');
@@ -47,6 +47,54 @@ test('updates native progress semantics when values or maxima change', async ({ 
 
   await page.getByRole('switch', { name: 'Voyager theme' }).click();
   await expect(page.locator('lcars-screen')).toHaveAttribute('theme', 'voyager');
+});
+
+test('reports dialog state and emits one close event per closing across shadow DOM', async ({ page }) => {
+  await page.goto('/examples/vanilla-html/');
+  await page.locator('lcars-screen').evaluate((screen) => {
+    const wrapper = document.createElement('div');
+    wrapper.id = 'dialog-wrapper';
+    const dialog = document.createElement('lcars-dialog');
+    dialog.title = 'Sensor report';
+    const report = document.createElement('p');
+    report.textContent = 'Long-range scan indicates stable conditions. '.repeat(140);
+    dialog.append(report);
+    wrapper.attachShadow({ mode: 'open' }).append(dialog);
+
+    const events: string[] = [];
+    screen.addEventListener('close', (event) => {
+      if (event.composedPath()[0] !== dialog) return;
+      events.push(`${dialog.open}/${event.bubbles}/${event.composed}`);
+      wrapper.dataset.events = events.join(',');
+    });
+    screen.append(wrapper);
+  });
+
+  const wrapper = page.locator('#dialog-wrapper');
+  const host = wrapper.locator('lcars-dialog');
+  const dialog = page.getByRole('dialog', { name: 'Sensor report' });
+  await expect(host).toHaveJSProperty('open', false);
+  await expect(dialog).toBeHidden();
+  await host.evaluate(async (element: LcarsDialog) => {
+    await element.updateComplete;
+    element.showModal();
+  });
+  await expect(host).toHaveJSProperty('open', true);
+  await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate((element) => element.scrollHeight > element.clientHeight)).toBe(true);
+
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await expect(dialog).toBeHidden();
+  await expect(host).toHaveJSProperty('open', false);
+  await expect(wrapper).toHaveAttribute('data-events', 'false/true/true');
+
+  await host.evaluate((element: LcarsDialog) => {
+    element.close();
+    element.showModal();
+  });
+  await page.keyboard.press('Escape');
+  await expect(dialog).toBeHidden();
+  await expect(wrapper).toHaveAttribute('data-events', 'false/true/true,false/true/true');
 });
 
 test('renders controls inside React and updates values through a native change event', async ({ page }) => {

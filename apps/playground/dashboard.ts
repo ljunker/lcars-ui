@@ -85,6 +85,10 @@ const approach = element('lcars-select', 'approach');
 const plot = element('lcars-button', 'plot-course');
 const course = element('lcars-status', 'course-status');
 const courseMessage = element('span', 'course-message');
+const courseDialog = element('lcars-dialog', 'course-dialog');
+const courseDestination = element('dd', 'course-destination');
+const courseApproach = element('dd', 'course-approach');
+let pendingCourse: { destination: string; approach: string } | undefined;
 
 function resetCourse() {
   plot.disabled = !destination.value.trim();
@@ -97,9 +101,26 @@ destination.addEventListener('input', resetCourse);
 approach.addEventListener('change', resetCourse);
 
 plot.addEventListener('click', () => {
+  const target = destination.value.trim();
+  if (!target || courseDialog.open) return;
+
+  const mode = approach.value;
+  pendingCourse = { destination: target, approach: mode };
+  courseDestination.textContent = target;
+  const option = [...approach.querySelectorAll('option')].find((option) => option.value === mode);
+  courseApproach.textContent = option?.label ?? mode;
+  courseDialog.showModal();
+});
+
+element('lcars-button', 'cancel-course').addEventListener('click', () => courseDialog.close());
+
+element('lcars-button', 'confirm-course').addEventListener('click', () => {
+  if (!courseDialog.open || !pendingCourse) return;
+
   course.state = 'nominal';
   course.textContent = 'Course locked';
-  courseMessage.textContent = `HEADING SET / ${destination.value.trim()} · ${approach.value}`;
+  courseMessage.textContent = `HEADING SET / ${pendingCourse.destination} · ${pendingCourse.approach}`;
+  courseDialog.close();
 });
 
 const thrust = element('lcars-slider', 'thrust');
