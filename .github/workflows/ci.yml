@@ -92,4 +92,4 @@ jobs:
           name: npm-tarball
           path: package
       - name: Publish package
-        run: npm publish "package/lcars-ui-${GITHUB_REF_NAME#v}.tgz" --access public
+        run: npm publish "./package/lcars-ui-${GITHUB_REF_NAME#v}.tgz" --access public
