@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0c0b11">
+    <title>USS Enterprise · LCARS</title>
+    <script type="module" src="/apps/playground/dashboard.ts"></script>
+  </head>
+  <body>
+    <lcars-screen theme="tng">
+      <lcars-header slot="header" title="USS Enterprise">
+        <div slot="leading">
+          <strong class="brand">LCARS</strong><br>
+          Operations Terminal
+        </div>
+        NCC-1701-D / GALAXY CLASS
+        <div class="ship-time" slot="actions">
+          <span class="caption">Stardate</span>
+          <strong>47988.1</strong>
+        </div>
+      </lcars-header>
+
+      <lcars-sidebar slot="navigation" label="Ship operations">
+        <span slot="heading">Ship Operations</span>
+        <lcars-button appearance="navigation" data-view="overview" active>Overview</lcars-button>
+        <lcars-button appearance="navigation" tone="secondary" data-view="engineering">Engineering</lcars-button>
+        <lcars-button appearance="navigation" tone="accent" data-view="navigation">Navigation</lcars-button>
+        <lcars-stack slot="footer" class="sidebar-footer">
+          <lcars-divider></lcars-divider>
+          <div>
+            <div class="caption">Display Profile</div>
+            <lcars-toggle id="theme" label="Voyager theme"></lcars-toggle>
+          </div>
+        </lcars-stack>
+      </lcars-sidebar>
+
+      <lcars-stack class="views">
+        <lcars-stack direction="horizontal" justify="between">
+          <div>
+            <p class="caption" id="view-context">Bridge / Sector 001</p>
+            <h1 id="view-title">Command Overview</h1>
+          </div>
+          <lcars-status id="ship-status" state="nominal">All systems nominal</lcars-status>
+        </lcars-stack>
+
+        <lcars-grid id="overview" columns="2">
+          <lcars-panel title="Warp Core">
+            <lcars-status slot="meta" state="nominal">Stable</lcars-status>
+            <lcars-stack direction="horizontal" justify="between">
+              <div>
+                <p class="caption">Core output</p>
+                <p class="output"><span id="core-value">75</span><span class="unit">%</span></p>
+              </div>
+              <span class="annotation">MATTER / ANTIMATTER<br>REACTION ASSEMBLY</span>
+            </lcars-stack>
+            <lcars-progress id="core-output" segmented hide-readout label="Warp core output" value="75"></lcars-progress>
+            <lcars-stack direction="horizontal" justify="between" class="annotation" aria-hidden="true">
+              <span>0%</span><span>25%</span><span>50%</span><span>75%</span><span>100%</span>
+            </lcars-stack>
+            <lcars-divider></lcars-divider>
+            <lcars-stack direction="horizontal" justify="between">
+              <lcars-button id="equalize" appearance="outline">Equalize core</lcars-button>
+              <span class="annotation" id="core-message" role="status">OUTPUT WITHIN LIMITS</span>
+            </lcars-stack>
+          </lcars-panel>
+
+          <lcars-panel title="Sensor Array">
+            <lcars-status slot="meta" state="nominal">Online</lcars-status>
+            <figure class="sensor">
+              <svg viewBox="0 0 424 160" role="img" aria-labelledby="sensor-title">
+                <title id="sensor-title">Long-range sensors. Two contacts within eight light years.</title>
+                <defs>
+                  <pattern id="sensor-grid" width="19" height="19" patternUnits="userSpaceOnUse">
+                    <path d="M 19 0 H 0 V 19" fill="none" stroke="currentColor" stroke-opacity=".09"/>
+                  </pattern>
+                  <linearGradient id="sensor-sweep" x1="0" x2="1" y1="1" y2="0">
+                    <stop offset="0" stop-color="currentColor" stop-opacity="0"/>
+                    <stop offset="1" stop-color="currentColor" stop-opacity=".35"/>
+                  </linearGradient>
+                </defs>
+                <rect width="424" height="160" rx="3" class="sensor-field"/>
+                <rect width="424" height="160" fill="url(#sensor-grid)"/>
+                <g fill="none" stroke="currentColor" stroke-opacity=".35">
+                  <path d="M 11 24 V 11 H 24 M 400 11 H 413 V 24 M 413 136 V 149 H 400 M 24 149 H 11 V 136"/>
+                  <path d="M 212 8 V 152 M 48 80 H 376" stroke-dasharray="2 5"/>
+                  <circle cx="212" cy="80" r="66"/>
+                  <circle cx="212" cy="80" r="44"/>
+                  <circle cx="212" cy="80" r="22"/>
+                  <path d="M 146 80 H 138 M 278 80 H 286 M 212 14 V 6 M 212 146 V 154"/>
+                </g>
+                <path d="M 212 80 L 227 16 A 66 66 0 0 1 272 52 Z" fill="url(#sensor-sweep)"/>
+                <path d="M 212 80 L 272 52" stroke="currentColor" stroke-opacity=".9"/>
+                <circle cx="212" cy="80" r="3" fill="currentColor"/>
+                <g fill="none" stroke="currentColor" stroke-width="1.25">
+                  <path d="M 179 47 l 4 4 -4 4 -4 -4 z M 255 107 l 4 4 -4 4 -4 -4 z"/>
+                  <path id="new-contact" hidden d="M 252 56 l 4 4 -4 4 -4 -4 z"/>
+                </g>
+                <g fill="currentColor" font-size="9" class="sensor-labels">
+                  <text x="23" y="30">LONG RANGE</text>
+                  <text x="23" y="140">RANGE / 8 LY</text>
+                  <text x="336" y="140">SECTOR 001</text>
+                </g>
+              </svg>
+            </figure>
+            <lcars-stack direction="horizontal" justify="between">
+              <lcars-button id="run-scan" appearance="outline" tone="secondary">Run scan</lcars-button>
+              <span class="annotation" id="scan-message" role="status">2 CONTACTS TRACKED</span>
+            </lcars-stack>
+          </lcars-panel>
+
+          <lcars-panel title="Power Distribution">
+            <lcars-status slot="meta" state="nominal">Balanced</lcars-status>
+            <lcars-progress label="Shields" value="92" tone="secondary"></lcars-progress>
+            <lcars-progress label="Impulse drive" value="64"></lcars-progress>
+            <lcars-progress label="Life support" value="100" tone="accent"></lcars-progress>
+          </lcars-panel>
+
+          <lcars-panel title="Communications">
+            <lcars-status slot="meta" state="nominal">Ready</lcars-status>
+            <lcars-input id="frequency" label="Hailing frequency" value="UFP-01" placeholder="Enter a channel"></lcars-input>
+            <lcars-stack direction="horizontal" justify="between">
+              <lcars-button id="hail" tone="accent">Open channel</lcars-button>
+              <span id="hail-message" class="annotation" role="status">STANDBY</span>
+            </lcars-stack>
+          </lcars-panel>
+        </lcars-grid>
+
+        <lcars-grid id="engineering" columns="2" hidden>
+          <lcars-panel title="Power Transfer">
+            <lcars-status slot="meta" state="nominal">Online</lcars-status>
+            <lcars-progress id="auxiliary" label="Auxiliary reserve" value="42" tone="secondary"></lcars-progress>
+            <lcars-toggle id="transfer" label="Route power to auxiliary reserve"></lcars-toggle>
+            <span id="transfer-message" class="annotation" role="status">TRANSFER NETWORK AVAILABLE</span>
+          </lcars-panel>
+          <lcars-panel title="Warp Containment">
+            <lcars-progress label="Magnetic containment" value="98"></lcars-progress>
+            <lcars-progress label="Coolant reserve" value="86" tone="accent"></lcars-progress>
+          </lcars-panel>
+        </lcars-grid>
+
+        <lcars-grid id="navigation" columns="2" hidden>
+          <lcars-panel title="Flight Plan">
+            <lcars-status id="course-status" slot="meta" state="offline">Awaiting course</lcars-status>
+            <lcars-input id="destination" label="Destination" placeholder="Name a star system"></lcars-input>
+            <lcars-stack direction="horizontal" justify="between">
+              <lcars-button id="plot-course" disabled>Plot course</lcars-button>
+              <span id="course-message" class="annotation" role="status">NO ACTIVE COURSE</span>
+            </lcars-stack>
+          </lcars-panel>
+          <lcars-panel title="Flight Control">
+            <lcars-progress label="Maneuvering thrusters" value="24" tone="secondary"></lcars-progress>
+            <lcars-progress label="Deflector efficiency" value="97"></lcars-progress>
+          </lcars-panel>
+        </lcars-grid>
+      </lcars-stack>
+    </lcars-screen>
+  </body>
+</html>

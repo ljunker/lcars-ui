@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LCARS Geometry Playground</title>
+    <script type="module" src="/apps/playground/geometry.ts"></script>
+  </head>
+  <body style="margin: 0">
+    <lcars-screen>
+      <lcars-header slot="header" title="Geometry Playground">
+        Change the rail width and elbow radius in both themes.
+      </lcars-header>
+      <lcars-sidebar slot="navigation">
+        <lcars-toggle id="theme" label="Voyager theme"></lcars-toggle>
+        <lcars-toggle id="wide" label="Wide rails"></lcars-toggle>
+        <lcars-toggle id="large" label="Large elbows"></lcars-toggle>
+      </lcars-sidebar>
+      <lcars-grid columns="2">
+        <lcars-panel title="Rails and caps">
+          <lcars-divider></lcars-divider>
+          The header, sidebar and divider use the same rail geometry.
+        </lcars-panel>
+        <lcars-panel title="Elbows">
+          <lcars-progress label="Relative width" value="75" segmented></lcars-progress>
+          Resize the viewport to observe the frame and grid reflow.
+        </lcars-panel>
+      </lcars-grid>
+    </lcars-screen>
+  </body>
+</html>

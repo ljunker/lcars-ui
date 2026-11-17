@@ -1,0 +1,64 @@
+body {
+  margin: 0;
+  background: #0c0b11;
+}
+
+lcars-screen {
+  --lcars-font-display: 'Barlow Condensed', system-ui, sans-serif;
+  --lcars-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+.brand {
+  font: 700 2.625rem/.9 var(--lcars-font-display);
+  letter-spacing: .08em;
+}
+
+.ship-time {
+  font: 500 .875rem/1.35 var(--lcars-font-mono);
+  text-align: end;
+}
+
+.ship-time .caption { display: block; }
+
+.views { --lcars-stack-gap: clamp(1rem, 2vw, 1.5rem); }
+
+.sidebar-footer { --lcars-stack-gap: 1rem; }
+
+h1 {
+  margin: 0;
+  font: 600 clamp(2.125rem, 4vw, 3.75rem)/1.02 var(--lcars-font-display);
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.caption, .annotation {
+  margin: 0;
+  font: 500 .6875rem/1.5 var(--lcars-font-mono);
+  letter-spacing: .08em;
+  opacity: .79;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+#view-context { margin-block-end: .3125rem; }
+
+.output {
+  margin: 0;
+  font: 600 4.375rem/.94 var(--lcars-font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.unit { font-size: .48em; }
+
+.sensor {
+  margin: 0;
+  color: #c6b8fb;
+}
+
+[theme='voyager'] .sensor { color: #a6d4ff; }
+
+.sensor svg { display: block; }
+.sensor [hidden] { display: none; }
+.sensor-field { fill: #0b0d18; }
+.sensor-labels { font-family: var(--lcars-font-mono); }

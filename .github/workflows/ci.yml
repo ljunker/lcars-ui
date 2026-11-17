@@ -1,0 +1,95 @@
+name: Build, test and release
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  verify:
+    name: Verify library and examples
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Set up pnpm
+        uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          cache: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check types and run unit tests
+        run: |
+          pnpm typecheck
+          pnpm test
+      - name: Build library, showcase and Storybook
+        run: |
+          pnpm build
+          pnpm build:showcase
+          pnpm build:storybook
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run browser and visual tests
+        run: pnpm test:browser
+      - name: Pack tagged release
+        if: github.ref_type == 'tag'
+        run: |
+          test "$GITHUB_REF_NAME" = "v$(node -p 'require("./package.json").version')"
+          npm pkg set repository.type=git repository.url="git+$GITHUB_SERVER_URL/$GITHUB_REPOSITORY.git"
+          pnpm pack --pack-destination package
+      - name: Upload npm tarball
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: npm-tarball
+          path: package/*.tgz
+          if-no-files-found: error
+
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      id-token: write # Authenticate to npm using trusted publishing.
+    needs: verify
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    environment: npm
+    concurrency:
+      group: npm-release
+      cancel-in-progress: false
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Download verified npm tarball
+        uses: actions/download-artifact@v8
+        with:
+          name: npm-tarball
+          path: package
+      - name: Publish package
+        run: npm publish "package/lcars-ui-${GITHUB_REF_NAME#v}.tgz" --access public

@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-showcase/
+storybook-static/
+playwright-report/
+test-results/
+*.tgz
+.DS_Store
+.idea

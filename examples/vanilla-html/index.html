@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LCARS in Vanilla HTML</title>
+  </head>
+  <body style="margin: 0">
+    <lcars-screen theme="tng">
+      <lcars-header slot="header" title="Outpost 47">
+        Station controls
+      </lcars-header>
+      <lcars-sidebar slot="navigation" label="Display settings">
+        <lcars-toggle label="Voyager theme"></lcars-toggle>
+      </lcars-sidebar>
+      <lcars-grid columns="2">
+        <lcars-panel title="Power reserves">
+          <lcars-progress label="Battery" value="75" max="100"></lcars-progress>
+          <lcars-button>Recharge</lcars-button>
+        </lcars-panel>
+        <lcars-panel title="Telemetry">
+          <lcars-status state="nominal">Online</lcars-status>
+        </lcars-panel>
+      </lcars-grid>
+    </lcars-screen>
+    <script type="module">
+      import 'lcars-ui';
+
+      const screen = document.querySelector('lcars-screen');
+      const toggle = document.querySelector('lcars-toggle');
+      const battery = document.querySelector('lcars-progress');
+      toggle.addEventListener('change', () => {
+        screen.theme = toggle.checked ? 'voyager' : 'tng';
+      });
+      document.querySelector('lcars-button').addEventListener('click', () => {
+        battery.value = 100;
+      });
+    </script>
+  </body>
+</html>
