@@ -25,10 +25,19 @@ test('keyboard navigation, focus, disabled controls and course plotting', async 
   await page.keyboard.type('Vulcan');
   await expect(plot).toBeEnabled();
   await page.keyboard.press('Tab');
+  const approach = page.getByRole('combobox', { name: 'Approach mode' });
+  await expect(approach).toBeFocused();
+  await expect(approach).toHaveValue('standard');
+  await page.keyboard.press('Tab');
   await expect(plot).toBeFocused();
   await page.keyboard.press('Space');
-  await expect(page.getByText('HEADING SET / VULCAN', { exact: false })).toBeVisible();
+  await expect(page.getByRole('status').filter({ hasText: 'HEADING SET' })).toHaveText('HEADING SET / Vulcan · standard');
   await expect(page.getByText('Course locked')).toBeVisible();
+
+  await approach.selectOption('docking');
+  await expect(page.getByText('Awaiting course')).toBeVisible();
+  await plot.click();
+  await expect(page.getByRole('status').filter({ hasText: 'HEADING SET' })).toHaveText('HEADING SET / Vulcan · docking');
 });
 
 test('dashboard controls update telemetry and expose native events', async ({ page }) => {
@@ -69,6 +78,21 @@ test('dashboard controls update telemetry and expose native events', async ({ pa
 test.describe('touch layouts', () => {
   test.use({ hasTouch: true });
 
+  test('updates thrust telemetry from a touch input in the navigation view', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Navigation' }).tap();
+    await expect(page.getByRole('combobox', { name: 'Approach mode' })).toBeVisible();
+    const slider = page.getByRole('slider', { name: 'Maneuvering thrust' });
+    const thrusters = page.getByRole('progressbar', { name: 'Maneuvering thrusters' });
+    await expect(thrusters).toHaveAttribute('value', '24');
+    await slider.scrollIntoViewIfNeeded();
+    const bounds = (await slider.boundingBox())!;
+    await slider.tap({ position: { x: Math.floor(bounds.width * 0.75), y: Math.floor(bounds.height / 2) } });
+    await expect.poll(async () => Number(await thrusters.getAttribute('value'))).toBeGreaterThan(50);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  });
+
   for (const width of [768, 390]) {
     test(`reflows navigation and panels without overflow at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
@@ -95,5 +119,9 @@ for (const theme of ['tng', 'voyager']) {
     if (theme === 'voyager') await page.getByRole('switch', { name: 'Voyager theme' }).click();
     const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
     expect(result.violations).toEqual([]);
+
+    await page.getByRole('button', { name: 'Navigation' }).click();
+    const navigationResult = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+    expect(navigationResult.violations).toEqual([]);
   });
 }

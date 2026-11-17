@@ -27,6 +27,28 @@ export const Input: StoryObj = {
   `),
 };
 
+export const Select: StoryObj = {
+  render: () => sample(html`
+    <lcars-select label="Approach mode">
+      <option value="">Choose a mode</option>
+      <optgroup label="Flight">
+        <option value="standard" selected>Standard</option>
+        <option value="docking">Docking</option>
+      </optgroup>
+    </lcars-select>
+    <lcars-select label="Locked mode" disabled>
+      <option>Standard</option>
+    </lcars-select>
+  `),
+};
+
+export const Slider: StoryObj = {
+  render: () => sample(html`
+    <lcars-slider label="Maneuvering thrust" value="25" step="5" style="width: 16rem"></lcars-slider>
+    <lcars-slider label="Locked thrust" value="40" disabled style="width: 16rem"></lcars-slider>
+  `),
+};
+
 export const Toggle: StoryObj = {
   render: () => sample(html`
     <lcars-toggle label="Beacon"></lcars-toggle>

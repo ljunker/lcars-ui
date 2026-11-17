@@ -28,10 +28,10 @@ Das lokale Paket lässt sich in einem separaten Projekt installieren und mit ein
 pnpm build
 pnpm pack
 cd /pfad/zur/anwendung
-npm install /pfad/zu/lcars-ui/lcars-ui-0.1.0.tgz
+npm install /pfad/zu/lcars-ui/lcars-ui-0.1.3.tgz
 ```
 
-Nach der Veröffentlichung steht dasselbe Paket unter `npm install lcars-ui` bereit. In einem Projekt mit Vite reicht dieser Modulimport.
+Das veröffentlichte Paket lässt sich mit `npm install lcars-ui` installieren. In einem Projekt mit Vite reicht dieser Modulimport.
 
 ```html
 <script type="module">
@@ -71,6 +71,8 @@ Der Import registriert die Custom Elements im Browser und exportiert ihre Klasse
 | `lcars-progress` | `label`, `value`, `max`, `tone`, `segmented`, `hide-readout` | | `track`, `readout` |
 | `lcars-status` | `state="nominal\|warning\|alert\|offline"` | Standard für Statustext | `status`, `indicator` |
 | `lcars-input` | `label`, `value`, `placeholder`, `disabled` | | `label`, `control` |
+| `lcars-select` | `label`, `value`, `disabled` | | `label`, `control` |
+| `lcars-slider` | `label`, `value`, `min`, `max`, `step`, `disabled` | | `label`, `control`, `readout` |
 | `lcars-toggle` | `label`, `checked`, `disabled` | | `label`, `control`, `track` |
 
 Bei wenig Platz rückt die Navigation über den Hauptinhalt. Das Raster reduziert die Spalten anhand seiner verfügbaren Breite. `tone` unterstützt `primary` (Standard), `secondary` und `accent`. Boolean-Attribute werden durch ihre Anwesenheit aktiviert. `active` kennzeichnet die aktuelle Auswahl mit `aria-current`. `lcars-progress` begrenzt den angezeigten Wert auf `0…max` und verwendet bei ungültigem Maximum den Wert 100.
@@ -79,8 +81,26 @@ Bei wenig Platz rückt die Navigation über den Hauptinhalt. Das Raster reduzier
 
 - `lcars-button` gibt den nativen `click` des internen Buttons weiter. Tastaturaktivierung erfolgt mit Enter oder Leertaste.
 - `lcars-input` aktualisiert `value` bei der Eingabe. `input` signalisiert laufende Änderungen, `change` die bestätigte Änderung.
-- `lcars-toggle` aktualisiert `checked` und meldet Benutzereingaben über `input` und `change`. Beide Eingabekomponenten stellen die Events auch außerhalb ihres Shadow DOM bereit. Programmatische Zuweisungen aktualisieren die Anzeige ohne Eingabe-Events.
-- Formulardaten liest die Anwendung im MVP aus `input.value` und `toggle.checked` aus. Die Custom Elements sind nicht form-associated. `FormData`, Formular-Reset und native Formularvalidierung erfassen sie daher nicht.
+- `lcars-select` und `lcars-slider` stellen den aktuellen Wert als String bzw. Zahl über `.value` bereit.
+- `lcars-toggle` aktualisiert `checked`. Alle vier Controls geben bei Bedienung `input` und `change` über die Shadow-DOM-Grenze weiter. Programmatische Zuweisungen aktualisieren die Anzeige ohne Eingabe-Events.
+- Formulardaten liest die Anwendung aus `.value` bzw. `.checked` aus. Datenerfassung, Reset und Validierung dieser Controls liegen im Anwendungscode.
+
+### Select und Slider
+
+```html
+<lcars-select label="Approach mode">
+  <option value="">Choose a mode</option>
+  <optgroup label="Flight">
+    <option value="standard" selected>Standard</option>
+    <option value="docking">Docking</option>
+  </optgroup>
+</lcars-select>
+<lcars-slider label="Maneuvering thrust" min="0" max="100" step="5" value="25"></lcars-slider>
+```
+
+Das Select übernimmt direkte `<option>`- und `<optgroup>`-Kinder und synchronisiert Änderungen am Markup. Ohne Wertvorgabe gilt die native Standardauswahl. Ein gesetzter oder gewählter Wert bleibt bei Optionsänderungen maßgeblich. Fehlt die passende Option, ist die Auswahl leer. Das Entfernen eines gesetzten `value`-Attributs oder `select.value = null` stellt die Standardauswahl wieder her.
+
+Der Slider verwendet standardmäßig `min=0`, `max=100` und `step=1`. `step="any"` erlaubt beliebige Zwischenschritte. Ohne Wertvorgabe bestimmt das native Range-Feld den Startwert. Nach einer programmatischen Änderung liefert `.value` den normalisierten Wert, sobald `slider.updateComplete` aufgelöst ist.
 
 ### Themes und Tokens
 
@@ -125,4 +145,4 @@ Der Showcase enthält Barlow Condensed und IBM Plex Mono. Ihre SIL-OFL-Lizenztex
 
 ## Release
 
-Der [GitHub-Workflow](.github/workflows/ci.yml) prüft Build, Tests und Beispiele. Ein Push-Tag wie `v0.1.0` muss zur Paketversion passen. Bei Erfolg packt der Workflow die Bibliothek und veröffentlicht den Tarball über npm Trusted Publishing. Dafür braucht der Workflow `ci.yml` eine Zuordnung zum npm-Paket und zur GitHub-Umgebung `npm`. Veröffentliche die erste Version mit einem angemeldeten npm-Konto und `npm publish ./lcars-ui-0.1.0.tgz --access public`. Richte Trusted Publishing anschließend für die folgenden Versionen ein. [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)
+Der GitHub-Workflow prüft Build, Tests und Beispiele. Ein Tag wie `v0.1.3` muss zur Paketversion passen. Bei einem Tag-Push packt der Workflow die Bibliothek nach erfolgreichen Prüfungen und veröffentlicht den Tarball über npm Trusted Publishing in der GitHub-Umgebung `npm`. [GitHub-Workflow](.github/workflows/ci.yml), [npm Trusted Publishing](https://docs.npmjs.com/trusted-publishers/)

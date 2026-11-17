@@ -81,19 +81,29 @@ transfer.addEventListener('change', () => {
 });
 
 const destination = element('lcars-input', 'destination');
+const approach = element('lcars-select', 'approach');
 const plot = element('lcars-button', 'plot-course');
 const course = element('lcars-status', 'course-status');
 const courseMessage = element('span', 'course-message');
 
-destination.addEventListener('input', () => {
+function resetCourse() {
   plot.disabled = !destination.value.trim();
   course.state = 'offline';
   course.textContent = 'Awaiting course';
   courseMessage.textContent = 'NO ACTIVE COURSE';
-});
+}
+
+destination.addEventListener('input', resetCourse);
+approach.addEventListener('change', resetCourse);
 
 plot.addEventListener('click', () => {
   course.state = 'nominal';
   course.textContent = 'Course locked';
-  courseMessage.textContent = `HEADING SET / ${destination.value.trim()}`;
+  courseMessage.textContent = `HEADING SET / ${destination.value.trim()} · ${approach.value}`;
+});
+
+const thrust = element('lcars-slider', 'thrust');
+const thrusters = element('lcars-progress', 'thrusters');
+thrust.addEventListener('input', () => {
+  thrusters.value = thrust.value;
 });

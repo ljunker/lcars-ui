@@ -1,6 +1,7 @@
 import { css, html } from 'lit';
 import { live } from 'lit/directives/live.js';
 import { foundations, LcarsControl } from '../tokens/foundations.js';
+import { fieldLayout, fieldSurface } from './field-styles.js';
 
 export class LcarsInput extends LcarsControl {
   static override properties = {
@@ -23,33 +24,8 @@ export class LcarsInput extends LcarsControl {
     this.disabled = false;
   }
 
-  static override styles = [foundations, css`
-    :host { display: block; min-inline-size: 0; }
-
-    label { display: grid; gap: .375rem; }
-
-    .label {
-      color: var(--_lcars-muted);
-      font: 500 .6875rem/1.4 var(--_lcars-mono);
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    input {
-      inline-size: 100%;
-      min-inline-size: 0;
-      min-block-size: var(--_lcars-control-height);
-      padding: .375rem .75rem;
-      border: 1px solid var(--_lcars-line);
-      border-inline-start: .25rem solid var(--_lcars-secondary);
-      border-radius: .1875rem .375rem .375rem .1875rem;
-      background: var(--_lcars-background);
-      color: var(--_lcars-text);
-      font: 1rem var(--_lcars-mono);
-    }
-
+  static override styles = [foundations, fieldLayout, fieldSurface, css`
     input::placeholder { color: var(--_lcars-muted); }
-    input:disabled { color: var(--_lcars-muted); cursor: not-allowed; }
   `];
 
   private onInput(event: Event) {
@@ -62,6 +38,7 @@ export class LcarsInput extends LcarsControl {
         <span class="label" part="label">${this.label || 'Text'}</span>
         <input
           type="text"
+          class="control"
           part="control"
           .value=${live(this.value)}
           placeholder=${this.placeholder ?? ''}

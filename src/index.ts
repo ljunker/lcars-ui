@@ -1,6 +1,8 @@
 import { LcarsButton } from './components/button.js';
 import { LcarsInput } from './components/input.js';
 import { LcarsProgress } from './components/progress.js';
+import { LcarsSelect } from './components/select.js';
+import { LcarsSlider } from './components/slider.js';
 import { LcarsStatus } from './components/status.js';
 import { LcarsToggle } from './components/toggle.js';
 import { LcarsDivider } from './layouts/divider.js';
@@ -13,7 +15,8 @@ import { LcarsStack } from './layouts/stack.js';
 
 export {
   LcarsButton, LcarsDivider, LcarsGrid, LcarsHeader, LcarsInput, LcarsPanel,
-  LcarsProgress, LcarsScreen, LcarsSidebar, LcarsStack, LcarsStatus, LcarsToggle,
+  LcarsProgress, LcarsScreen, LcarsSelect, LcarsSidebar, LcarsSlider, LcarsStack,
+  LcarsStatus, LcarsToggle,
 };
 
 const elements = {
@@ -25,7 +28,9 @@ const elements = {
   'lcars-panel': LcarsPanel,
   'lcars-progress': LcarsProgress,
   'lcars-screen': LcarsScreen,
+  'lcars-select': LcarsSelect,
   'lcars-sidebar': LcarsSidebar,
+  'lcars-slider': LcarsSlider,
   'lcars-stack': LcarsStack,
   'lcars-status': LcarsStatus,
   'lcars-toggle': LcarsToggle,
@@ -41,7 +46,9 @@ declare global {
     'lcars-panel': LcarsPanel;
     'lcars-progress': LcarsProgress;
     'lcars-screen': LcarsScreen;
+    'lcars-select': LcarsSelect;
     'lcars-sidebar': LcarsSidebar;
+    'lcars-slider': LcarsSlider;
     'lcars-stack': LcarsStack;
     'lcars-status': LcarsStatus;
     'lcars-toggle': LcarsToggle;

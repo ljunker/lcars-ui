@@ -143,13 +143,18 @@
           <lcars-panel title="Flight Plan">
             <lcars-status id="course-status" slot="meta" state="offline">Awaiting course</lcars-status>
             <lcars-input id="destination" label="Destination" placeholder="Name a star system"></lcars-input>
+            <lcars-select id="approach" label="Approach mode">
+              <option value="standard">Standard</option>
+              <option value="docking">Docking</option>
+            </lcars-select>
             <lcars-stack direction="horizontal" justify="between">
               <lcars-button id="plot-course" disabled>Plot course</lcars-button>
               <span id="course-message" class="annotation" role="status">NO ACTIVE COURSE</span>
             </lcars-stack>
           </lcars-panel>
           <lcars-panel title="Flight Control">
-            <lcars-progress label="Maneuvering thrusters" value="24" tone="secondary"></lcars-progress>
+            <lcars-slider id="thrust" label="Maneuvering thrust" value="24"></lcars-slider>
+            <lcars-progress id="thrusters" label="Maneuvering thrusters" value="24" tone="secondary"></lcars-progress>
             <lcars-progress label="Deflector efficiency" value="97"></lcars-progress>
           </lcars-panel>
         </lcars-grid>
